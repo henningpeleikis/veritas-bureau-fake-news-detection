@@ -1,0 +1,11 @@
+ollama
+openai
+streamlit
+pandas
+scikit-learn
+seaborn
+matplotlib
+python-dotenv
+transformers
+torch
+ddgs

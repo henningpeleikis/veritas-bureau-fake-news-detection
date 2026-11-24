@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veritas Bureau Evaluation Dashboard</title>
+  <style>
+    :root {
+      --bg: #f4efe8;
+      --paper: #fffaf4;
+      --paper-2: #f8f1e6;
+      --ink: #221a14;
+      --muted: #6f655b;
+      --border: #d9cbbc;
+      --accent: #8b2e1f;
+      --accent-2: #c46e4d;
+      --real: #2f7d62;
+      --fake: #9f3a2d;
+      --neutral: #c7b8a7;
+      --shadow: 0 18px 48px rgba(48, 34, 22, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(139, 46, 31, 0.08), transparent 26%),
+        linear-gradient(180deg, #f9f5ef, var(--bg));
+    }
+
+    .page {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 28px 22px 48px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(139, 46, 31, 0.97), rgba(60, 31, 23, 0.97));
+      color: #fff8f2;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -72px;
+      bottom: -72px;
+      border-radius: 50%;
+      background: rgba(255, 248, 242, 0.09);
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 150px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 248, 242, 0.16);
+      border-radius: 14px;
+      background: rgba(255, 248, 242, 0.08);
+    }
+
+    .brand-lockup img {
+      display: block;
+      width: 110px;
+      height: auto;
+      filter: brightness(0) invert(1);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.84;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.1rem, 4vw, 3.6rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 14px 0 0;
+      line-height: 1.65;
+      color: rgba(255, 248, 242, 0.92);
+      font-size: 1.02rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-chip {
+      background: rgba(255, 248, 242, 0.12);
+      border: 1px solid rgba(255, 248, 242, 0.14);
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+
+    .hero-chip span {
+      display: block;
+      font-family: "Courier New", monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .hero-chip strong {
+      font-size: 1.12rem;
+    }
+
+    .section {
+      margin-top: 26px;
+    }
+
+    .summary-banner {
+      display: block;
+    }
+
+    .section-title {
+      margin: 0 0 8px;
+      font-size: 1.38rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.98rem;
+    }
+
+    .kpi-grid,
+    .notes-grid,
+    .two-col,
+    .three-col {
+      display: grid;
+      gap: 16px;
+    }
+
+    .kpi-grid {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .two-col {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+
+    .three-col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+    }
+
+    .label {
+      margin: 0;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-family: "Courier New", monospace;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+    }
+
+    .value {
+      margin: 8px 0 6px;
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 700;
+    }
+
+    .small {
+      color: var(--muted);
+      line-height: 1.48;
+      font-size: 0.93rem;
+      margin: 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid #e8ddd0;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-family: "Courier New", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.72rem;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-family: "Courier New", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .real {
+      color: var(--real);
+      border-color: rgba(47, 125, 98, 0.22);
+      background: rgba(47, 125, 98, 0.08);
+    }
+
+    .fake {
+      color: var(--fake);
+      border-color: rgba(159, 58, 45, 0.22);
+      background: rgba(159, 58, 45, 0.08);
+    }
+
+    .svg-wrap {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .svg-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .legend .dot-real::before { background: var(--real); }
+    .legend .dot-fake::before { background: var(--fake); }
+    .legend .dot-accent::before { background: var(--accent); }
+    .legend .dot-accent2::before { background: var(--accent-2); }
+
+    ul {
+      margin: 12px 0 0 18px;
+      padding: 0;
+      line-height: 1.62;
+    }
+
+    .summary-callout {
+      background: linear-gradient(180deg, var(--paper), var(--paper-2));
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fbf6ef;
+      color: var(--muted);
+      font-family: "Courier New", monospace;
+      font-size: 0.74rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .footer-meta {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 980px) {
+      .two-col, .three-col, .summary-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <p class="eyebrow">Veritas Bureau • Evaluation Dashboard</p>
+          <h1>Results Overview</h1>
+          <p>
+            This dashboard is generated directly from the current <strong>results.csv</strong> evaluation file.
+          </p>
+        </div>
+        <div class="brand-lockup" aria-label="IE University">
+          <img src="../logo.svg" alt="IE University logo">
+        </div>
+      </div>
+      <div class="hero-grid" id="hero-grid"></div>
+    </section>
+
+    <section class="section summary-banner">
+      <article class="card summary-callout">
+        <h2 class="section-title">Executive Summary</h2>
+        <p class="section-subtitle">
+          The current evaluation file shows strong overall performance on a balanced sample, with clear separation between many REAL and FAKE cases and a useful set of supporting internal signals.
+        </p>
+        <div class="pill-row">
+          <span class="pill">Balanced evaluation set</span>
+          <span class="pill">Multi-agent architecture</span>
+          <span class="pill">Interpretable signals</span>
+          <span class="pill">Static browser-ready report</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Key Metrics</h2>
+      <p class="section-subtitle">
+        Headline indicators for classification quality, confidence, and runtime performance on the current evaluation set.
+      </p>
+      <div class="kpi-grid" id="kpi-grid"></div>
+    </section>
+
+    <section class="section two-col">
+      <article class="card">
+        <h3>Confusion Matrix</h3>
+        <p class="small">Counts and row-wise recall rates derived from the current prediction set.</p>
+        <div class="svg-wrap" id="confusion-chart"></div>
+      </article>
+      <article class="card">
+        <h3>Prediction Balance</h3>
+        <p class="small">Comparison between the true label distribution and the predicted label distribution.</p>
+        <div class="svg-wrap" id="distribution-chart"></div>
+        <div class="legend">
+          <span class="dot-real">REAL</span>
+          <span class="dot-fake">FAKE</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="section two-col">
+      <article class="card">
+        <h3>Confidence Distribution</h3>
+        <p class="small">Histogram of final confidence values across the evaluation rows.</p>
+        <div class="svg-wrap" id="confidence-chart"></div>
+      </article>
+      <article class="card">
+        <h3>Average Signals By True Class</h3>
+        <p class="small">Mean bias, credibility, contradicted claims, and supported claims for REAL versus FAKE rows.</p>
+        <div class="svg-wrap" id="signal-chart"></div>
+      </article>
+    </section>
+
+    <section class="section two-col">
+      <article class="card">
+        <h3>Accuracy By Subject</h3>
+        <p class="small">Top subjects by row count, shown with their observed accuracy on the current evaluation sample.</p>
+        <div class="svg-wrap" id="subject-chart"></div>
+      </article>
+      <article class="card">
+        <h3>Processing Time Distribution</h3>
+        <p class="small">Processing time per row, sorted from fastest to slowest, with the average highlighted.</p>
+        <div class="svg-wrap" id="time-chart"></div>
+      </article>
+    </section>
+
+    <section class="section three-col">
+      <article class="card">
+        <h3>Dataset Notes</h3>
+        <ul>
+          <li>The current file contains 100 evaluated rows.</li>
+          <li>The evaluation set is balanced between REAL and FAKE labels.</li>
+          <li>Each row stores classifier outputs and supporting internal signals.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Interpretation</h3>
+        <ul>
+          <li>The system performs strongly overall, with high precision when predicting FAKE.</li>
+          <li>Bias and credibility behave as meaningful auxiliary signals alongside factual support.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Highest-Confidence Misclassifications</h2>
+      <p class="section-subtitle">
+        Misclassified rows sorted by confidence, useful for quick error inspection.
+      </p>
+      <article class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>True</th>
+                <th>Predicted</th>
+                <th>Confidence</th>
+                <th>Subject</th>
+              </tr>
+            </thead>
+            <tbody id="error-table"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer">
+      Static HTML dashboard generated from the current Veritas Bureau evaluation rows. No external JavaScript libraries are required.
+      <div class="footer-meta">
+        Data source: <code>results/results.csv</code> · Dashboard: <code>results/dashboard.html</code> · All calculations are performed locally in-browser from embedded row data.
+      </div>
+    </div>
+  </div>
+
+  <script id="dataset" type="application/json">[{"title":"Kenya's repeat presidential poll was free, fair: commission","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":133.84,"judge_summary":"The article's claims are supported by evidence from Reuters. The tone is neutral, and there is no significant bias detected. The source credibility score is high at 0.75.","subject":"worldnews","date":"October 30, 2017 "},{"title":"Poland wants strong euro zone before mulling membership - finance minister","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.23,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":167.7,"judge_summary":"The article's claims about Poland's stance on joining the euro zone are supported by evidence and the tone of the piece is neutral. The only unverifiable claim regarding public opinion does not affect the overall credibility.","subject":"worldnews","date":"October 29, 2017 "},{"title":"Senate confirms Trump pick Perry as energy secretary","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.23,"credibility_score":0.75,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":169.46,"judge_summary":"All claims were supported by evidence. The article has a neutral tone with no significant bias detected. The source credibility score is high at 0.75, and the HF Classifier also indicates REAL.","subject":"politicsNews","date":"March 2, 2017 "},{"title":"HOW LEFT- LEANING GOOGLE\u2019S SECRET DECISIONS COULD CHOOSE OUR NEXT PRESIDENT","true_label":"FAKE","predicted_label":"FAKE","confidence":0.8,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":7,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":224.17,"judge_summary":"The article contains several unsupported assertions and sensationalist language, with a high bias score and low credibility. While some claims are supported by evidence, others are unverifiable or contradicted, reinforcing the overall fake news classification.","subject":"left-news","date":"Aug 23, 2015"},{"title":" REPORT: Team Trump Just Hired A Crackpot Anti-Muslim Conspiracy Theorist To Advise On National Security","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":137.65,"judge_summary":"The article contains several supported claims but also makes unverifiable assertions about Frank Gaffney's career history. The tone is inflammatory with a high bias score and low credibility, reinforcing the fake news classification.","subject":"News","date":"November 16, 2016"},{"title":"Lavrov to Trump: \u2018Do Not Attack Venezuela\u2019","true_label":"FAKE","predicted_label":"FAKE","confidence":0.75,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.3,"tone":"inflammatory","n_claims":4,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":149.38,"judge_summary":"The article contains a mix of supported, unverifiable, and unsupported claims with high bias and low credibility scores. The HF Classifier also indicates FAKE. Given the inflammatory tone and lack of credible sources, the evidence points towards the article being fake.","subject":"Middle-east","date":"August 16, 2017"},{"title":" Racist Charleston Church Shooter Seems To Think He Is Entitled To A Literal White Supremacist As His Public Defender","true_label":"FAKE","predicted_label":"FAKE","confidence":0.75,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":1,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":169.06,"judge_summary":"The article contains one contradicted claim about David Bruck's ethnicity and uses inflammatory language with a high bias score. The credibility of the source is low, and the HF Classifier also identifies it as fake.","subject":"News","date":"September 19, 2017"},{"title":"Asian-American judges among Obama's options as he seeks to replace Scalia","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.85,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":176.81,"judge_summary":"The article is supported by multiple verified claims about potential nominees for the Supreme Court vacancy left by Justice Antonin Scalia. Only one claim was unverifiable, but it does not contradict any facts. The tone of the piece is informative and unbiased, with a high credibility score.","subject":"politicsNews","date":"February 14, 2016 "},{"title":" \u2018The Fuse Is Lit\u2019: Legendary News Anchor Dan Rather Says Trump-Russia Scandal Is About To EXPLODE","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":5,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":174.44,"judge_summary":"The article is highly biased and lacks credibility despite some supported claims. The tone is sensationalist and inflammatory, with unsupported assertions and no counter-arguments presented. The HF Classifier also identifies it as fake.","subject":"News","date":"March 2, 2017"},{"title":" NY Daily News Goes ALL IN On NRA, \u2018Thanks\u2019 Them For Orlando (TWEET\/IMAGE)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.8,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":154.44,"judge_summary":"The article's tone is inflammatory and highly biased, with a low credibility score. While some claims are supported by evidence, others are unverifiable due to the lack of context and sources. The HF Classifier also labels it as fake.","subject":"News","date":"June 13, 2016"},{"title":"WATCH DONALD DISCUSS OUR MILITARY At FL Rally And See Why He\u2019s Beating Rubio And Bush In Their Home State","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9994,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":1,"n_contradicted":0,"n_supported":1,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":67.53,"judge_summary":"The article has strong indicators of being fake news, including a high bias score and low credibility. While one claim was supported by fact-checking, the overall tone is inflammatory and sensationalist, with unsupported assertions and missing key information such as authorship and publication date.","subject":"politics","date":"Oct 23, 2015"},{"title":"DETECTIVE ON SETH RICH Murder Mystery Drops Shocking News [Video]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":7,"n_contradicted":2,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":238.58,"judge_summary":"The article contains two contradicted claims and a high bias score, reinforcing the likelihood of it being fake news. Despite some supported claims, the credibility is low and the HF Classifier strongly indicates FAKE.","subject":"left-news","date":"May 17, 2017"},{"title":"NATO mulls 'offensive defense' with cyber warfare rules","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":125.39,"judge_summary":"The article is supported by multiple verified claims regarding NATO's consideration of a more aggressive cyber warfare approach and the recent large-scale cyber exercise in Estonia. The source has moderate credibility but leans slightly sensationalist, with no clear bias detected.","subject":"worldnews","date":"November 30, 2017 "},{"title":"President Trump Announces Decision on Paris Climate Deal\u2026America First! [Video]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":1,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":122.13,"judge_summary":"The article contains one strongly contradicted claim about the Paris Agreement's temperature target, an inflammatory tone, and low credibility score. The HF Classifier also labels it as fake with high confidence.","subject":"Government News","date":"Jun 1, 2017"},{"title":"Suicide bomber kills 13 others in northeast Nigerian city: police official","true_label":"REAL","predicted_label":"FAKE","confidence":0.25,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"informative","n_claims":3,"n_contradicted":1,"n_supported":1,"devils_advocate_triggered":true,"da_recommendation":"OVERTURN","processing_time":110.21,"judge_summary":"One claim was contradicted by fact-checking evidence, but the article's overall credibility and tone suggest it is real news. Two claims were supported or unverifiable. [OVERTURNED by Devil's Advocate: Counter-arguments are strong. Key claims lack supporting evidence or are contradicted by fact-checking.]","subject":"worldnews","date":"October 22, 2017 "},{"title":" Paul Ryan Refuses To Hold Town Halls Because He\u2019s Too Afraid Of Protesters","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":4,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":122.39,"judge_summary":"The article contains several unsupported and sensational claims with high bias and low credibility scores. The HF Classifier also confirms the content as fake.","subject":"News","date":"July 7, 2017"},{"title":"Abu Dhabi Crown Prince offers condolences to exiled son of slain Yemeni ex-leader in UAE","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":85.08,"judge_summary":"All claims were supported by evidence... The article uses somewhat sensational language but is otherwise neutral.","subject":"worldnews","date":"December 6, 2017 "},{"title":"Suicide attack kills a top Pakistani police officer: official","true_label":"REAL","predicted_label":"REAL","confidence":0.78,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":107.94,"judge_summary":"Two out of three claims were supported or had no contradictory evidence. The article has a neutral bias and high credibility despite some sensationalist elements.","subject":"worldnews","date":"November 24, 2017 "},{"title":" Read Former FBI Director James Comey\u2019s Full Prepared Testimony Ahead Of Today\u2019s Hearing","true_label":"FAKE","predicted_label":"REAL","confidence":0.65,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.65,"credibility_score":0.55,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":158.04,"judge_summary":"The article contains mostly supported claims and a moderate bias score. The credibility score is average, but the HF Classifier incorrectly labels it as FAKE with high confidence.","subject":"News","date":"June 8, 2017"},{"title":" Sheriff Joe Arpaio Sinks To A New Low With His Classless Response To Prince\u2019s Death (VIDEO)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.82,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":4,"n_contradicted":0,"n_supported":1,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":153.75,"judge_summary":"The article contains multiple unverifiable claims and a high bias score. The credibility of the source is low, and the HF Classifier also labels it as fake.","subject":"News","date":"April 22, 2016"},{"title":"A breakfast in Harlem underscores key challenge for White House hopeful Sanders","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":5,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":149.91,"judge_summary":"All claims were supported with strong evidence and high confidence scores... The article's tone is slightly sensational but does not indicate bias.","subject":"politicsNews","date":"February 10, 2016 "},{"title":"Lithuania's Social Democrat MPs disobey party to stay in government","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.65,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":100.66,"judge_summary":"All claims were supported by evidence, indicating that the article is accurate. The bias score is low at 0.25 and the credibility score is moderate at 0.65, with a slight sensational headline but overall neutral tone.","subject":"worldnews","date":"September 25, 2017 "},{"title":" Twitter Just Banned A Major Trump Ally For Threatening Journalists (SCREENSHOTS)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":103.95,"judge_summary":"The article is classified as FAKE due to its high bias score and low credibility, despite some supported claims. The tone of the piece is inflammatory and uses sensationalist language without presenting counter-arguments or attributing quotes properly.","subject":"News","date":"October 28, 2017"},{"title":"TUCKER CARLSON: Why Brutal MS-13 Gang (Obama\u2019s \u201cUndocumented Children\u201d) Is Far Greater Threat Than ISIS [VIDEO]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.8,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":155.4,"judge_summary":"The article contains one supported claim, one unverifiable claim, and another supported claim regarding MS-13 gang activities. However, the bias score is high at 0.85, indicating inflammatory tone and lack of balanced reporting. The credibility score is low at 0.25 due to sensational headline and unsupported assertions. Additionally, a pretrained HF Classifier (BERT) confidently labels this as FAKE.","subject":"politics","date":"Apr 14, 2017"},{"title":"White House says will work with Congress to fix Dodd-Frank law","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":88.53,"judge_summary":"All claims in the article were supported by evidence, indicating that the content is accurate. The bias score is low at 0.15 and the source credibility score is high at 0.75.","subject":"politicsNews","date":"February 3, 2017 "},{"title":"TRUMP TAPS Anti-Iran Deal Congressman To Head CIA\u2026The Left Goes Ballistic!","true_label":"FAKE","predicted_label":"FAKE","confidence":0.75,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":118.65,"judge_summary":"The article is classified as FAKE due to its high bias score, low credibility, and the HF classifier's strong signal. While most claims are supported by fact-checking, the tone of the article is inflammatory and it relies on unsupported assertions.","subject":"politics","date":"Nov 18, 2016"},{"title":"CLINTON GLOBAL INITIATIVE MEMBER TO Moderate First Debate\u2026They Tried to Scrub His Name From The CGI Website!","true_label":"FAKE","predicted_label":"FAKE","confidence":0.93,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.83,"credibility_score":0.2,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":99.43,"judge_summary":"The article is highly biased and lacks credibility. While some claims are supported, others are unverifiable due to missing context or sources. The inflammatory tone and lack of credible sourcing further reinforce the fake news classification.","subject":"politics","date":"Sep 1, 2016"},{"title":"Drug lobby, under criticism, starts media campaign","true_label":"REAL","predicted_label":"REAL","confidence":0.75,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.65,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":132.1,"judge_summary":"Two out of three claims were supported or unverifiable; the article has a slightly sensational headline but is generally informative and credible.","subject":"politicsNews","date":"January 23, 2017 "},{"title":" Hannity Just Fired Off An ABSURD Tweet At CBS For Koppel Interview \u2013 Twitter SHREDS Him For It","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.35,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":177.01,"judge_summary":"The article has a high bias score and low credibility, with the HF Classifier also indicating fake news. While most claims were supported, one claim was unverifiable and another was contradicted by the tone of the original text being inflammatory and sensationalist.","subject":"News","date":"March 26, 2017"},{"title":"Supreme Court temporarily blocks Louisiana abortion law","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.3,"credibility_score":0.85,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":150.56,"judge_summary":"The article is REAL as most claims are supported and there is no significant bias or contradictions. The source has high credibility and the HF Classifier also indicates REAL.","subject":"politicsNews","date":"March 4, 2016 "},{"title":"OOPS! HECKLERS FORCE HILLARY OFF Stage In LA After Only One Minute [VIDEO]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.85,"hf_label":"FAKE","hf_confidence":0.9991,"bias_score":0.83,"credibility_score":0.15,"tone":"inflammatory","n_claims":2,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":111.01,"judge_summary":"The article uses sensationalist language and lacks credible sources... The HF Classifier also strongly indicates that the content is fake.","subject":"left-news","date":"May 7, 2016"},{"title":" Former RNC Chair Michael Steele Refuses To Vote For Donald Trump","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":129.28,"judge_summary":"The article is classified as FAKE due to high bias and low credibility scores, along with a strong signal from the HF Classifier. Two out of three claims are supported or unverifiable, but the tone is inflammatory and the source lacks credible attributes.","subject":"News","date":"October 21, 2016"},{"title":"Scranton, Pennsylvania to sell sewer utility for $195 million","true_label":"REAL","predicted_label":"REAL","confidence":0.9,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.85,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":175.95,"judge_summary":"Two out of three claims were supported by evidence, with one unverifiable claim due to lack of specific details. The article has a low bias score and high credibility.","subject":"politicsNews","date":"March 29, 2016 "},{"title":"A-LIST DEMOCRATS Attend Obama\u2019s Last Taxpayer-Funded Gig At The White House [Video]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.95,"hf_label":"FAKE","hf_confidence":0.9996,"bias_score":0.85,"credibility_score":0.15,"tone":"sensationalist","n_claims":3,"n_contradicted":0,"n_supported":0,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":85.37,"judge_summary":"The article makes unsupported claims about celebrities attending a White House event and uses sensationalist language without providing credible sources or evidence.","subject":"politics","date":"Jan 7, 2017"},{"title":"Saudi man arrested after threatening women drivers","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":120.33,"judge_summary":"The article is supported by two out of three claims being verified as true, with one unverifiable claim. The source credibility score is high at 0.75 and the bias score is low at 0.25 indicating a generally reliable and informative tone.","subject":"worldnews","date":"September 29, 2017 "},{"title":" Trump Was Whining About White House Leaks. Chrissy Teigen Just Hit Back And It Is BRILLIANT (TWEET)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":147.5,"judge_summary":"The article contains a mix of supported, unverifiable, and potentially unsupported claims. However, the high bias score and low credibility score strongly indicate fake news. The HF classifier also labels it as FAKE with high confidence.","subject":"News","date":"February 14, 2017"},{"title":"China urges North Korea to 'stop taking actions that are wrong'","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":108.83,"judge_summary":"All claims were supported by evidence from Reuters. The bias score is low and the source credibility is high.","subject":"worldnews","date":"September 4, 2017 "},{"title":"British PM May says Mugabe's resignation gives Zimbabwe a chance to be free","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.75,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":93.3,"judge_summary":"The article is supported by factual claims about Robert Mugabe's resignation and Theresa May's statements regarding it. The source credibility score is high, despite some sensationalism in the headline.","subject":"worldnews","date":"November 21, 2017 "},{"title":" Fox News Steals Greta Van Susteren\u2019s Personal Website, So She Punks Them Hard For It","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":117.16,"judge_summary":"The article contains multiple supported claims but also uses sensationalist language and has low credibility. The bias score is high, indicating a strong slant against Fox News. The HF Classifier strongly indicates FAKE.","subject":"News","date":"September 8, 2016"},{"title":" Mike Pence Saw \u2018DO NOT TOUCH\u2019 On Critical NASA Tech, So He Touched It (TWEETS)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.3,"tone":"inflammatory","n_claims":4,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":166.55,"judge_summary":"The article has an inflammatory tone and low credibility, with several unsupported assertions and no cited sources. The HF Classifier also labels it as FAKE. While most claims are supported by evidence, the unverifiable claim about NASA's statement and the overall sensationalist language reinforce the fake news classification.","subject":"News","date":"July 7, 2017"},{"title":"TRUMP\u2019S LAWYER DESTROYS #ChrisWallace In Heated Exchange: \u201cNo Chris, I deal with fact and law\u201d [Video]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":7,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":231.77,"judge_summary":"The article contains several unverifiable claims and one supported claim, but the bias score is high (0.85) and credibility score is low (0.25). The HF Classifier also labels it as FAKE with full confidence.","subject":"left-news","date":"Jun 18, 2017"},{"title":" This State Is About To Let Guns Have More Rights Than Most People","true_label":"FAKE","predicted_label":"FAKE","confidence":0.8,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":1,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":204.1,"judge_summary":"The article contains a contradicted claim about abortion restrictions in Michigan and uses inflammatory language without presenting counter-arguments or attributing quotes. The source credibility is low, and the HF Classifier also labels it as fake.","subject":"News","date":"February 8, 2016"},{"title":"BUSTED: [Video] AARP Caught Using SUBLIMINAL MESSAGE To Promote \u2018MARTIAL LAW\u2019 In Recent Ad","true_label":"FAKE","predicted_label":"FAKE","confidence":0.8,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":0,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":137.84,"judge_summary":"The article makes unsupported claims about a video on AARP's YouTube channel containing subliminal messages promoting martial law, which are unverifiable through web searches and lack credible evidence. The tone is inflammatory with sensationalist language and no counter-arguments presented.","subject":"left-news","date":"Apr 26, 2015"},{"title":"'Jihadi Gran' gets 10 years after joining son in Syria","true_label":"REAL","predicted_label":"FAKE","confidence":0.25,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.75,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"OVERTURN","processing_time":161.89,"judge_summary":"The article contains two supported claims and one contradicted claim. The bias score is high at 0.65 but the credibility score is also relatively high at 0.75, indicating a mix of reliable and sensationalist reporting. The HF Classifier incorrectly labels it as REAL with very high confidence, which we discount in favor of the fact-checking results. [OVERTURNED by Devil's Advocate: The contradicted claim and high bias score significantly weaken the article's credibility despite supported claims and credible sources.]","subject":"worldnews","date":"October 6, 2017 "},{"title":" Restaurant Owner Calls Black Customer \u2018N*****\u2019 Then Throws Him Out Because \u2018Trump Is President Now\u2019","true_label":"FAKE","predicted_label":"FAKE","confidence":0.75,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":1,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":207.36,"judge_summary":"The article contains one contradicted claim about the involvement of a waitress and several unsupported assertions without proper sourcing. The tone is inflammatory with emotionally loaded language, and the credibility score is low. While most claims are supported by evidence, the presence of contradictions, high bias, and HF classifier's strong signal towards fake news lead to a final classification of FAKE.","subject":"News","date":"January 24, 2017"},{"title":" President Obama Nominates FIRST Muslim For A Federal Judgeship","true_label":"FAKE","predicted_label":"FAKE","confidence":0.85,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":154.1,"judge_summary":"The article is classified as FAKE due to its high bias score and low credibility. Although most claims were supported by fact-checking, the inflammatory tone and lack of credible sourcing cues indicate a potential misinformation attempt.","subject":"News","date":"September 7, 2016"},{"title":"Trump to 'slap' foes, embrace friends in first U.N. speech: envoy","true_label":"REAL","predicted_label":"REAL","confidence":0.65,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.55,"tone":"sensationalist","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":155.19,"judge_summary":"Two out of three claims were supported by evidence... The article uses sensationalist language but has some credible information.","subject":"politicsNews","date":"September 15, 2017 "},{"title":"TRUMP DRIVES CRITICS CRAZY: Eliminates Obama\u2019s Czars\u2026Pays Female Staffers More Than Men\u2026Saves Taxpayers Millions!","true_label":"FAKE","predicted_label":"FAKE","confidence":0.95,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":1,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":131.8,"judge_summary":"The article contains one strongly contradicted claim and two unverifiable claims, with high bias and low credibility scores. The HF Classifier also labels it as fake.","subject":"left-news","date":"Jul 2, 2017"},{"title":"Former Trump security aide was Russia blackmail risk: ex-U.S. official","true_label":"REAL","predicted_label":"REAL","confidence":0.8,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.75,"tone":"inflammatory","n_claims":5,"n_contradicted":1,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":208.13,"judge_summary":"The article contains one contradicted claim but the majority of claims are supported by evidence. The source has a moderate bias score and high credibility, with no strong indicators pointing to fake news.","subject":"politicsNews","date":"May 8, 2017 "},{"title":" Michael Jordan Condemns North Carolina Anti-LGBT Law","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.65,"tone":"inflammatory","n_claims":5,"n_contradicted":1,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":212.91,"judge_summary":"The article contains a single contradicted claim about there being no instances of sexual assault due to transgender protections, which is false according to evidence. The bias score is high (0.85) and the tone is inflammatory with emotionally loaded language. While some claims are supported by facts, the credibility score is moderate (0.65), and the HF Classifier strongly indicates fake news.","subject":"News","date":"April 27, 2016"},{"title":"CHICAGO DELI OWNER Says He Was Relieved To Hear Las Vegas Massacre Happened At Country Music Festival: \u201cWhite people shooting white people isn\u2019t terror \u2026 it\u2019s community outreach\u201d","true_label":"FAKE","predicted_label":"FAKE","confidence":0.87,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":253.74,"judge_summary":"The article contains inflammatory language and lacks credible sources. Two out of five claims are supported by evidence, but three are unverifiable or unsupported. The bias score is high (0.85) and the credibility score is low (0.25). The HF Classifier also labels it as FAKE with 100% confidence.","subject":"politics","date":"Oct 5, 2017"},{"title":"AMERICA IN CRISIS: \u201cHillary Clinton Is A CRIMINAL Involved In a Criminal Enterprise\u2026If The Voters Do Not Stop Her, She Will Be The Next President of the United States\u201d","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":277.42,"judge_summary":"The article contains highly inflammatory language and unsupported assertions about Hillary Clinton's criminal involvement, which align with a low credibility score and high bias score. The HF Classifier also labels it as fake.","subject":"Government News","date":"Jul 6, 2016"},{"title":"Russia-Gate Was All the Rage Across US Media \u2013 Where Did it Go and Why?","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":5,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":382.4,"judge_summary":"The article is biased with an inflammatory tone, low credibility score, and classified as FAKE by the HF Classifier. While some claims are supported, others are contradicted or unverifiable, but the overall bias and lack of credible sources strongly indicate misinformation.","subject":"Middle-east","date":"April 17, 2017"},{"title":"CHER ATTACKS TRUMP: Compares Bill Clinton\u2019s Infidelities To Trump\u2019s 3 Marriages\u2026Forgets One Important Fact","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":372.22,"judge_summary":"The article contains an unverifiable claim about Cher's criticism of Donald Trump and uses sensationalist language with high bias. The source credibility is low, and the HF classifier strongly indicates fake news.","subject":"left-news","date":"Jan 6, 2016"},{"title":"U.S. DEPARTMENT OF EDUCATION: Teachers Should Incorporate Islam In More Subjects","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.55,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":266.5,"judge_summary":"The article contains a mix of supported and unverifiable claims but has significant bias and low credibility scores, reinforcing its classification as fake news.","subject":"left-news","date":"Feb 15, 2016"},{"title":"California judge questions Trump's sanctuary city order","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.85,"tone":"neutral","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":115.13,"judge_summary":"The article is supported by multiple verified claims regarding a federal judge questioning the U.S. Justice Department over President Trump's order to withhold funds from sanctuary cities. The tone of the article is neutral, and it includes credible sources such as named authors and specific dates.","subject":"politicsNews","date":"April 14, 2017 "},{"title":"MUSLIM BROTHERHOOD Peddling Sharia As \u201cSocial Justice\u201d\u202613 Reasons Why They Are A Terrorist Organization","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9992,"bias_score":0.92,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":166.39,"judge_summary":"The article contains a mix of supported and unverifiable claims, but it has high bias and low credibility scores. The HF Classifier also labels the content as fake with high confidence.","subject":"politics","date":"Apr 1, 2017"},{"title":"India's push to broaden use of its biometric database","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.3,"credibility_score":0.85,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":136.28,"judge_summary":"The article contains mostly supported claims with no significant contradictions. The source has high credibility and the tone is informative without sensationalism. The HF classifier also supports REAL.","subject":"worldnews","date":"August 24, 2017 "},{"title":"WOW! HUNGARY\u2019S PRIME MINISTER Follows Through On Promise To Build Border Wall\u2026George Soros Will Be Furious When He Sees The STUNNING Number of Illegal Immigrants He\u2019s Kept Out So Far","true_label":"FAKE","predicted_label":"FAKE","confidence":0.75,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.3,"tone":"sensationalist","n_claims":5,"n_contradicted":1,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":184.64,"judge_summary":"The article contains one clear contradiction and several unsupported claims, indicating a high bias score and low credibility. The HF Classifier also labels it as fake.","subject":"politics","date":"Sep 16, 2017"},{"title":"Congresswoman quits Democratic National Committee, endorses Bernie Sanders","true_label":"REAL","predicted_label":"REAL","confidence":0.78,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.2,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":127.0,"judge_summary":"The article accurately reports that Tulsi Gabbard resigned from her position as Vice Chair of the Democratic National Committee to endorse Bernie Sanders and that Bernie Sanders is competing for the nomination with Hillary Clinton. The claim about Debbie Wasserman Schultz's reaction is unverifiable, but this does not significantly impact the overall credibility of the piece given the neutral bias score and high source credibility.","subject":"politicsNews","date":"February 28, 2016 "},{"title":"Get used to drills, China tells Taiwan; Taipei says it seeks peace","true_label":"REAL","predicted_label":"REAL","confidence":0.65,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":1,"n_supported":1,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":132.92,"judge_summary":"One claim was contradicted, but two were supported or unverifiable. The bias score is low and the source credibility is high.","subject":"worldnews","date":"December 27, 2017 "},{"title":"Trump warns Republicans to 'be careful' over Obamacare: tweet","true_label":"REAL","predicted_label":"REAL","confidence":0.65,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.65,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":153.53,"judge_summary":"Two out of three claims were supported by evidence, while one was contradicted. The article has a high bias score but also high credibility. The HF Classifier predicts REAL with high confidence.","subject":"politicsNews","date":"January 4, 2017 "},{"title":"Brazil's Workers Party formalizes support for ex-president Lula","true_label":"REAL","predicted_label":"REAL","confidence":0.65,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.75,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":164.18,"judge_summary":"Two out of three claims were supported by evidence... The article's tone is inflammatory but its credibility score is high.","subject":"worldnews","date":"December 16, 2017 "},{"title":" Trump Falls Flat On His Face In Israel, Doesn\u2019t Know He\u2019s In The Middle East (VIDEO)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.85,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":0,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":156.66,"judge_summary":"The article is classified as FAKE due to its high bias score and low credibility. All claims are unverifiable through web searches, but the inflammatory tone, lack of named authors or sources, and unsupported assertions strongly indicate misinformation.","subject":"News","date":"May 22, 2017"},{"title":"Trump to speak with British prime minister May: White House","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.05,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":107.86,"judge_summary":"All claims were supported by evidence from official sources, and the bias score is very low indicating a neutral tone. The credibility score is also high.","subject":"politicsNews","date":"February 14, 2017 "},{"title":"John Kerry: Carnival should not bar Cuban-Americans from cruises to Cuba","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.32,"credibility_score":0.7,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":205.05,"judge_summary":"The article is supported by multiple verified claims from Reuters and The Miami Herald. Only one claim was unverifiable but did not contradict any facts. The tone of the article is informative, with a low bias score and high credibility.","subject":"politicsNews","date":"April 14, 2016 "},{"title":" Viral Video Captures The Importance Of Investing In Children","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":1,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":216.06,"judge_summary":"The article contains multiple unverifiable claims and a highly inflammatory tone. The source credibility score is low, and the HF Classifier strongly indicates fake news.","subject":"News","date":"January 20, 2016"},{"title":"Trump increases federal funding for debris removal: White House","true_label":"REAL","predicted_label":"REAL","confidence":0.78,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.2,"credibility_score":0.75,"tone":"neutral","n_claims":2,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":140.45,"judge_summary":"The article's claims are supported by Reuters and the White House. The tone is neutral, and there are no significant bias or credibility issues.","subject":"politicsNews","date":"September 2, 2017 "},{"title":"Yemen official says disappointed by U.S. Supreme court decision on travel ban","true_label":"REAL","predicted_label":"REAL","confidence":0.75,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":168.0,"judge_summary":"The article contains one contradicted claim about the travel ban affecting six Muslim-majority countries and all refugees, which is inaccurate as it includes seven countries and has exceptions. However, two claims are supported by evidence, and the bias score is low at 0.25. The source credibility is high at 0.75 despite a slightly sensational headline.","subject":"politicsNews","date":"June 26, 2017 "},{"title":"Trump dismisses Buffett's rebuke over his business judgment","true_label":"REAL","predicted_label":"REAL","confidence":0.65,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.45,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":222.66,"judge_summary":"Most claims were supported by evidence and the source has high credibility despite some unverifiable details. The bias score is moderate but not indicative of fake news.","subject":"politicsNews","date":"August 2, 2016 "},{"title":"Ex-Trump adviser Flynn talking to Congress about testifying in Russia probe: lawyer","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"neutral","n_claims":5,"n_contradicted":0,"n_supported":5,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":168.12,"judge_summary":"All claims in the article were supported by evidence from Reuters. The tone of the article is neutral, and it includes named sources and references. The bias score is low at 0.25, indicating a lack of significant bias.","subject":"politicsNews","date":"March 31, 2017 "},{"title":" Hannity Throws MASSIVE Tantrum Trying To Defend Trump\u2019s Sexual Assault Remarks","true_label":"FAKE","predicted_label":"FAKE","confidence":0.85,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.35,"tone":"inflammatory","n_claims":4,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":218.92,"judge_summary":"The article is biased and lacks credibility. It contains unverifiable claims about Hannity attacking Hillary Clinton over Bill Clinton's extramarital activities while defending Trump, which are not supported by evidence. The tone of the article is inflammatory and sensationalist, with a high bias score and low credibility score. Additionally, the HF Classifier also labels it as FAKE.","subject":"News","date":"October 9, 2016"},{"title":"Russian lawyer who met Trump Jr. seeks return to U.S. to defend money laundering settlement","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":214.47,"judge_summary":"The article contains mostly supported claims with no significant contradictions. The bias score is low and the source credibility is high. The HF Classifier also supports REAL.","subject":"politicsNews","date":"November 1, 2017 "},{"title":"BLACK TRUMP SUPPORTER Goes Ballistic On Maxine Waters: \u201cPeople are tired with your hate and your racism!\u201d [Video]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":206.62,"judge_summary":"The article has high bias and low credibility scores, with the HF Classifier also indicating it is fake. While some claims are supported, others are unverifiable or unsupported by evidence. The inflammatory tone and lack of balanced reporting further reinforce the fake classification.","subject":"politics","date":"Jun 25, 2017"},{"title":"UK PM May wants to be a strong friend to the EU","true_label":"REAL","predicted_label":"FAKE","confidence":0.25,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.1,"credibility_score":0.65,"tone":"neutral","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"OVERTURN","processing_time":129.43,"judge_summary":"One claim was contradicted regarding Theresa May's current role as Prime Minister of the UK, but two claims were supported and the source credibility is relatively high. [OVERTURNED by Devil's Advocate: The key claim regarding Theresa May's role is contradicted with high confidence, and there are no current sources supporting the other claims about her statements or policies.]","subject":"worldnews","date":"September 22, 2017 "},{"title":"Turkey PM confirms Iraqi government in control of main land border","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.15,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":130.16,"judge_summary":"All claims in the article were supported by evidence from fact-checking sources. The bias score is low and the credibility score is high, indicating that the article is reliable.","subject":"worldnews","date":"October 31, 2017 "},{"title":"Sanders says to lay off hundreds of campaign workers: NY Times","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.65,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":103.75,"judge_summary":"The article's claims are supported by evidence and its tone is informative despite a slightly sensational headline. The source credibility score is high and the HF classifier confirms it as REAL.","subject":"politicsNews","date":"April 27, 2016 "},{"title":"NYC MAYOR DE BLASIO\u2026Putting Illegal Aliens Before The Safety Of Americans: It\u2019s Okay To Protect Illegal Alien Drunk Drivers [VIDEO]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.95,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":136.15,"judge_summary":"The article contains one contradicted claim and two supported claims, but the overall tone is inflammatory with a high bias score and low credibility. The HF Classifier also labels it as fake.","subject":"left-news","date":"Feb 6, 2017"},{"title":"Rights group voices fears over Trump refugee plan, torture","true_label":"REAL","predicted_label":"REAL","confidence":0.9,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.85,"credibility_score":0.75,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":5,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":194.15,"judge_summary":"The article's claims are mostly supported by evidence, and it includes named author and organization (HRW). Although the tone is inflammatory and there is a slight sensational headline, the credibility score is moderate to high.","subject":"politicsNews","date":"January 25, 2017 "},{"title":"Defying warnings, residents refuse to leave Mumbai's crumbling buildings","true_label":"REAL","predicted_label":"FAKE","confidence":0.3,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.75,"tone":"sensationalist","n_claims":7,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"OVERTURN","processing_time":301.21,"judge_summary":"The article includes one supported claim and several unverifiable claims but no outright contradictions. The bias score is high due to sensationalist tone, yet the credibility score is moderate-high indicating some reliable sourcing. HF classifier suggests REAL despite low confidence in web search findings for specific details. [OVERTURNED by Devil's Advocate: The presence of multiple unverifiable claims and the article's sensationalist tone weaken its credibility despite some supported facts.]","subject":"worldnews","date":"September 5, 2017 "},{"title":"Trump seeks 'historic' U.S. military spending boost, domestic cuts","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.28,"credibility_score":0.7,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":242.45,"judge_summary":"The article is mostly supported by factual claims about Trump's proposed military budget, with only one unverifiable claim regarding John McCain's stance on voting for a budget. The tone of the article is slightly sensational but within reasonable bounds and includes specific figures and sources.","subject":"politicsNews","date":"February 27, 2017 "},{"title":"Austrian conservative-far right coalition talks near finish line","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.23,"credibility_score":0.75,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":143.18,"judge_summary":"All claims in the article were supported by evidence from Reuters, indicating that the Austrian conservative-far right coalition talks could be completed as soon as Friday evening with a swearing-in ceremony on Monday. The tone of the article is informative and there are no significant bias indicators.","subject":"worldnews","date":"December 15, 2017 "},{"title":" Trump Just Broke Another MAJOR Campaign Promise And People Are Outraged","true_label":"FAKE","predicted_label":"FAKE","confidence":0.93,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":143.52,"judge_summary":"The article contains a major contradicted claim about the U.S. Constitution and presidential pay requirements. It also exhibits high bias and low credibility, with inflammatory tone and unsupported assertions.","subject":"News","date":"March 12, 2017"},{"title":"LOL! BARACK OBAMA Looks Ridiculous Criticizing Trump On Immigration After This 2005 Video Reveals A Much Different Obama [VIDEO]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.95,"hf_label":"FAKE","hf_confidence":0.9995,"bias_score":0.85,"credibility_score":0.15,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":129.49,"judge_summary":"The article contains one strongly contradicted claim and two supported claims. However, the bias score is very high (0.85) and the credibility score is very low (0.15). The HF Classifier also labels it as FAKE with high confidence. Given these factors, the evidence clearly points towards the article being fake.","subject":"left-news","date":"Feb 1, 2017"},{"title":"IT\u2019S ABOUT TIME! 19 GOP Congressmen Call For Closer Look Into Mueller\u2019s Team Of Political Hack Lawyers","true_label":"FAKE","predicted_label":"FAKE","confidence":0.82,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":114.35,"judge_summary":"The article has high bias and low credibility scores, with inflammatory tone and unsupported assertions. While the fact-checking supports some claims, others are unverifiable due to lack of sourcing. The HF Classifier also labels it as fake.","subject":"politics","date":"Oct 13, 2017"},{"title":"Trump on Twitter (Feb 24) - FBI leaks","true_label":"REAL","predicted_label":"FAKE","confidence":0.85,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.65,"credibility_score":0.3,"tone":"inflammatory","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":104.59,"judge_summary":"The article contains one contradicted claim and two supported claims, but the bias score is high (0.65) and credibility score is low (0.3). The HF Classifier incorrectly labels it as REAL with full confidence, which does not override the strong signals from fact-checking and source analysis.","subject":"politicsNews","date":"February 24, 2017 "},{"title":"[VIDEO] GAY ACTRESS TRIES TO AMBUSH TED CRUZ AT IOWA PICNIC\u2026Cruz Turns The Argument Around In A Brilliant Way","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":96.28,"judge_summary":"The article is biased with an inflammatory tone and low credibility score. It includes a single unverifiable claim about Cruz citing examples of violent treatment of homosexuals by ISIS and Iran, while the other claims are supported but presented in a sensational manner.","subject":"politics","date":"Aug 22, 2015"},{"title":"INSANE ANTI-TRUMP PROTESTER Lights Trump Supporter\u2019s Hair On Fire\u2026Police Need Help Finding This Protester [Video]","true_label":"FAKE","predicted_label":"FAKE","confidence":0.95,"hf_label":"FAKE","hf_confidence":0.9994,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":78.5,"judge_summary":"The article contains highly inflammatory language and lacks credible sources, while the HF classifier strongly indicates it is fake. Although some claims were supported by evidence, the overall tone and sourcing issues reinforce the classification as FAKE.","subject":"left-news","date":"Jan 23, 2017"},{"title":"CROWD OF GERMAN PATRIOTS Greets Merkel Shouting \u201cTRAITOR!\u201d","true_label":"FAKE","predicted_label":"FAKE","confidence":0.92,"hf_label":"FAKE","hf_confidence":0.9985,"bias_score":0.95,"credibility_score":0.2,"tone":"inflammatory","n_claims":2,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":61.39,"judge_summary":"The article uses inflammatory and sensationalist language, lacks credible sources, and has a very high bias score. The HF Classifier also confirms it as fake with high confidence.","subject":"Government News","date":"Jun 27, 2016"},{"title":"Pakistani anti-corruption court indicts ousted PM Sharif","true_label":"REAL","predicted_label":"REAL","confidence":0.8,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":167.2,"judge_summary":"The article is primarily supported by factual claims about the indictment of Nawaz Sharif and his daughter for corruption allegations related to London properties. The source credibility score is high, and there are no strong signals indicating bias or fake news.","subject":"worldnews","date":"October 19, 2017 "},{"title":"France raises prospect of new sanctions on Iran over ballistic program","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":2,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":86.41,"judge_summary":"The article is supported by two out of three claims being verified as true... The source credibility score is high and there are no significant bias indicators.","subject":"worldnews","date":"November 13, 2017 "},{"title":"Pakistan's ex-PM appears in court for trial over finances","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":98.44,"judge_summary":"All claims in the article were supported by evidence, and the source credibility is high. The bias score is low, indicating an informative tone without significant bias.","subject":"worldnews","date":"November 3, 2017 "},{"title":"Trump to roll back use of climate change in policy reviews: source","true_label":"REAL","predicted_label":"REAL","confidence":0.8,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":1,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":166.88,"judge_summary":"The article is mostly supported by evidence, with only one claim contradicted. The bias score is low at 0.35, indicating a neutral tone. The credibility score is high at 0.75, and the HF Classifier confirms REAL.","subject":"politicsNews","date":"March 14, 2017 "},{"title":"Trump, Ghani agree U.S. can help develop Afghanistan's rare earth minerals","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.35,"credibility_score":0.75,"tone":"informative","n_claims":5,"n_contradicted":0,"n_supported":5,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":135.42,"judge_summary":"The article is supported by multiple verified claims from Reuters. The tone of the piece is informative, with no significant bias detected. The source credibility score is high at 0.75, and the HF Classifier also confirms it as REAL.","subject":"worldnews","date":"September 22, 2017 "},{"title":" John Oliver CRUSHES Republican Lies About Supreme Court History (VIDEO)","true_label":"FAKE","predicted_label":"FAKE","confidence":0.8,"hf_label":"FAKE","hf_confidence":0.9997,"bias_score":0.85,"credibility_score":0.25,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":172.87,"judge_summary":"The article is classified as FAKE due to a high bias score and low credibility, despite some supported claims. The tone is inflammatory with sensational headlines and unsupported assertions.","subject":"News","date":"February 22, 2016"},{"title":"Trump White House will not make visitor logs public, break from Obama policy","true_label":"REAL","predicted_label":"REAL","confidence":0.92,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.45,"credibility_score":0.65,"tone":"informative","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":104.09,"judge_summary":"The article is supported by fact-checking evidence for all claims made, with no contradictions found. The bias score is moderate but not extreme, and the source credibility is high. The HF Classifier also supports REAL.","subject":"politicsNews","date":"April 14, 2017 "},{"title":"Senior North Korean diplomat meets U.N. political affairs chief","true_label":"REAL","predicted_label":"REAL","confidence":0.95,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.05,"credibility_score":0.85,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":3,"devils_advocate_triggered":false,"da_recommendation":"","processing_time":86.12,"judge_summary":"All claims in the article were supported by fact-checking evidence. The tone of the article was neutral and it had a high credibility score.","subject":"worldnews","date":"December 6, 2017 "},{"title":"HOW OBAMA IS FORCING POOREST AMERICANS To Fend For Themselves Against Dangerous Criminals Crossing Our Borders","true_label":"FAKE","predicted_label":"FAKE","confidence":0.78,"hf_label":"FAKE","hf_confidence":0.9998,"bias_score":0.83,"credibility_score":0.3,"tone":"inflammatory","n_claims":5,"n_contradicted":0,"n_supported":4,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":215.08,"judge_summary":"The article contains a mix of supported and unverifiable claims, but its inflammatory tone, lack of credible sources, and low credibility score reinforce the classification as fake news.","subject":"left-news","date":"Mar 24, 2016"},{"title":"Trump says U.S. 'very protective' of Baltic region","true_label":"REAL","predicted_label":"REAL","confidence":0.65,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.25,"credibility_score":0.75,"tone":"neutral","n_claims":3,"n_contradicted":0,"n_supported":1,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":131.46,"judge_summary":"One claim was supported by evidence, while two were unverifiable due to lack of confirming information in the provided snippets. The tone is neutral and there is no significant bias detected. The source has moderate credibility issues but includes attributed quotes and references to specific events.","subject":"politicsNews","date":"August 28, 2017 "},{"title":"Trump says Britain should leave EU: newspaper interview","true_label":"REAL","predicted_label":"REAL","confidence":0.78,"hf_label":"REAL","hf_confidence":0.9999,"bias_score":0.23,"credibility_score":0.75,"tone":"informative","n_claims":3,"n_contradicted":1,"n_supported":2,"devils_advocate_triggered":true,"da_recommendation":"UPHOLD","processing_time":131.04,"judge_summary":"The article contains one contradicted claim but two supported claims and has low bias and high credibility scores. The HF Classifier also indicates REAL, supporting the overall assessment.","subject":"politicsNews","date":"June 19, 2016 "}]</script>
+
+  <script>
+    const COLORS = {
+      real: "#2f7d62",
+      fake: "#9f3a2d",
+      accent: "#8b2e1f",
+      accent2: "#c46e4d",
+      paper: "#fffaf4",
+      neutral: "#c7b8a7",
+      border: "#d9cbbc",
+      ink: "#221a14",
+      muted: "#6f655b"
+    };
+
+    const rows = JSON.parse(document.getElementById("dataset").textContent).map((row) => ({
+      ...row,
+      confidence: Number(row.confidence),
+      bias_score: Number(row.bias_score),
+      credibility_score: Number(row.credibility_score),
+      n_claims: Number(row.n_claims),
+      n_contradicted: Number(row.n_contradicted),
+      n_supported: Number(row.n_supported),
+      processing_time: Number(row.processing_time)
+    }));
+
+    const mean = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    const fmtPct = (n) => `${(n * 100).toFixed(1)}%`;
+    const fmtNum = (n, digits = 2) => Number(n).toFixed(digits);
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+    function groupBy(items, keyFn) {
+      return items.reduce((acc, item) => {
+        const key = keyFn(item);
+        (acc[key] ||= []).push(item);
+        return acc;
+      }, {});
+    }
+
+    const total = rows.length;
+    const correct = rows.filter((r) => r.true_label === r.predicted_label);
+    const errors = rows.filter((r) => r.true_label !== r.predicted_label)
+      .sort((a, b) => b.confidence - a.confidence);
+    const accuracy = correct.length / total;
+    const avgConfidence = mean(rows.map((r) => r.confidence));
+    const avgTime = mean(rows.map((r) => r.processing_time));
+    const avgBias = mean(rows.map((r) => r.bias_score));
+    const avgCred = mean(rows.map((r) => r.credibility_score));
+
+    const labelCounts = {
+      trueReal: rows.filter((r) => r.true_label === "REAL").length,
+      trueFake: rows.filter((r) => r.true_label === "FAKE").length,
+      predReal: rows.filter((r) => r.predicted_label === "REAL").length,
+      predFake: rows.filter((r) => r.predicted_label === "FAKE").length
+    };
+
+    const confusion = {
+      realReal: rows.filter((r) => r.true_label === "REAL" && r.predicted_label === "REAL").length,
+      realFake: rows.filter((r) => r.true_label === "REAL" && r.predicted_label === "FAKE").length,
+      fakeReal: rows.filter((r) => r.true_label === "FAKE" && r.predicted_label === "REAL").length,
+      fakeFake: rows.filter((r) => r.true_label === "FAKE" && r.predicted_label === "FAKE").length
+    };
+
+    function hero() {
+      const heroItems = [
+        ["Rows analyzed", total],
+        ["Class balance", `${labelCounts.trueReal} REAL / ${labelCounts.trueFake} FAKE`],
+        ["Overall accuracy", fmtPct(accuracy)],
+        ["Mean processing time", `${fmtNum(avgTime)}s`]
+      ];
+      document.getElementById("hero-grid").innerHTML = heroItems.map(([label, value]) => `
+        <div class="hero-chip">
+          <span>${label}</span>
+          <strong>${value}</strong>
+        </div>
+      `).join("");
+    }
+
+    function kpis() {
+      const items = [
+        ["Accuracy", fmtPct(accuracy), "Correct predictions divided by total evaluated rows."],
+        ["Average Confidence", fmtNum(avgConfidence, 3), "Mean confidence score across all final predictions."],
+        ["Average Bias Score", fmtNum(avgBias, 3), "Average rhetorical-bias signal across the evaluation set."],
+        ["Average Credibility Score", fmtNum(avgCred, 3), "Average structural credibility signal across the evaluation rows."],
+        ["Predicted REAL", labelCounts.predReal, "Number of rows assigned to the REAL class."],
+        ["Predicted FAKE", labelCounts.predFake, "Number of rows assigned to the FAKE class."]
+      ];
+      document.getElementById("kpi-grid").innerHTML = items.map(([label, value, note]) => `
+        <article class="card">
+          <p class="label">${label}</p>
+          <p class="value">${value}</p>
+          <p class="small">${note}</p>
+        </article>
+      `).join("");
+    }
+
+    function confusionChart() {
+      const values = [
+        { x: 0, y: 0, label: "REAL → REAL", count: confusion.realReal, color: "#d9efe7" },
+        { x: 1, y: 0, label: "REAL → FAKE", count: confusion.realFake, color: "#f3ddd8" },
+        { x: 0, y: 1, label: "FAKE → REAL", count: confusion.fakeReal, color: "#f3ddd8" },
+        { x: 1, y: 1, label: "FAKE → FAKE", count: confusion.fakeFake, color: "#ecd3cd" }
+      ];
+      const max = Math.max(...values.map(v => v.count));
+      const cellW = 170, cellH = 120, pad = 18, left = 86, top = 34;
+      const svg = `
+        <svg viewBox="0 0 460 320" aria-label="Confusion matrix">
+          <text x="172" y="18" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">Predicted label</text>
+          <text x="8" y="156" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace" transform="rotate(-90 8,156)">True label</text>
+          <text x="${left + 55}" y="${top}" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">REAL</text>
+          <text x="${left + cellW + 56}" y="${top}" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">FAKE</text>
+          <text x="26" y="${top + 74}" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">REAL</text>
+          <text x="26" y="${top + cellH + 74}" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">FAKE</text>
+          ${values.map((v) => {
+            const x = left + v.x * cellW;
+            const y = top + 18 + v.y * cellH;
+            const boxW = cellW - pad;
+            const boxH = cellH - pad;
+            const opacity = 0.45 + 0.45 * (v.count / max);
+            return `
+              <rect x="${x}" y="${y}" rx="18" ry="18" width="${boxW}" height="${boxH}" fill="${v.color}" opacity="${opacity}" stroke="${COLORS.border}" />
+              <text x="${x + boxW / 2}" y="${y + 30}" text-anchor="middle" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">${v.label}</text>
+              <text x="${x + boxW / 2}" y="${y + boxH / 2 + 14}" text-anchor="middle" font-size="32" fill="${COLORS.ink}" font-weight="700">${v.count}</text>
+            `;
+          }).join("")}
+          <text x="${left}" y="290" font-size="13" fill="${COLORS.muted}">REAL recall: ${fmtPct(confusion.realReal / (confusion.realReal + confusion.realFake || 1))}</text>
+          <text x="${left + 190}" y="290" font-size="13" fill="${COLORS.muted}">FAKE recall: ${fmtPct(confusion.fakeFake / (confusion.fakeFake + confusion.fakeReal || 1))}</text>
+        </svg>`;
+      document.getElementById("confusion-chart").innerHTML = svg;
+    }
+
+    function distributionChart() {
+      const max = Math.max(labelCounts.trueReal, labelCounts.trueFake, labelCounts.predReal, labelCounts.predFake);
+      const series = [
+        { label: "True REAL", value: labelCounts.trueReal, color: COLORS.real },
+        { label: "True FAKE", value: labelCounts.trueFake, color: COLORS.fake },
+        { label: "Pred REAL", value: labelCounts.predReal, color: COLORS.real },
+        { label: "Pred FAKE", value: labelCounts.predFake, color: COLORS.fake }
+      ];
+      const barW = 58, gap = 24, baseY = 250, left = 48, chartH = 170;
+      document.getElementById("distribution-chart").innerHTML = `
+        <svg viewBox="0 0 420 300" aria-label="Prediction balance">
+          <line x1="42" y1="${baseY}" x2="384" y2="${baseY}" stroke="${COLORS.border}" />
+          ${series.map((s, i) => {
+            const x = left + i * (barW + gap);
+            const h = chartH * (s.value / max);
+            const y = baseY - h;
+            return `
+              <rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="16" fill="${s.color}" opacity="${i < 2 ? 0.9 : 0.55}"></rect>
+              <text x="${x + barW / 2}" y="${y - 10}" text-anchor="middle" font-size="18" fill="${COLORS.ink}" font-weight="700">${s.value}</text>
+              <text x="${x + barW / 2}" y="${baseY + 18}" text-anchor="middle" font-size="11" fill="${COLORS.muted}" font-family="Courier New, monospace">${s.label}</text>
+            `;
+          }).join("")}
+        </svg>`;
+    }
+
+    function confidenceChart() {
+      const bins = Array.from({ length: 5 }, (_, i) => ({
+        label: `${(0.70 + i * 0.05).toFixed(2)}–${(0.75 + i * 0.05).toFixed(2)}`,
+        count: 0
+      }));
+      rows.forEach((r) => {
+        const idx = clamp(Math.floor((r.confidence - 0.70) / 0.05), 0, bins.length - 1);
+        bins[idx].count += 1;
+      });
+      const max = Math.max(...bins.map(b => b.count), 1);
+      const left = 48, baseY = 250, chartH = 165, barW = 52, gap = 16;
+      document.getElementById("confidence-chart").innerHTML = `
+        <svg viewBox="0 0 410 300" aria-label="Confidence distribution">
+          <line x1="40" y1="${baseY}" x2="386" y2="${baseY}" stroke="${COLORS.border}" />
+          ${bins.map((b, i) => {
+            const x = left + i * (barW + gap);
+            const h = chartH * (b.count / max);
+            const y = baseY - h;
+            return `
+              <rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="14" fill="${COLORS.accent2}" opacity="0.9"></rect>
+              <text x="${x + barW / 2}" y="${y - 8}" text-anchor="middle" font-size="16" fill="${COLORS.ink}" font-weight="700">${b.count}</text>
+              <text x="${x + barW / 2}" y="${baseY + 18}" text-anchor="middle" font-size="10" fill="${COLORS.muted}" font-family="Courier New, monospace">${b.label}</text>
+            `;
+          }).join("")}
+        </svg>`;
+    }
+
+    function signalChart() {
+      const grouped = groupBy(rows, r => r.true_label);
+      const labels = [
+        ["Bias", "bias_score"],
+        ["Credibility", "credibility_score"],
+        ["Contradicted", "n_contradicted"],
+        ["Supported", "n_supported"]
+      ];
+      const realVals = labels.map(([, key]) => mean(grouped.REAL.map(r => r[key])));
+      const fakeVals = labels.map(([, key]) => mean(grouped.FAKE.map(r => r[key])));
+      const max = Math.max(...realVals, ...fakeVals, 1);
+      const left = 118, top = 34, rowH = 48, maxW = 198;
+      document.getElementById("signal-chart").innerHTML = `
+        <svg viewBox="0 0 430 270" aria-label="Average signals by class">
+          ${labels.map(([label], i) => {
+            const y = top + i * rowH;
+            const realW = maxW * (realVals[i] / max);
+            const fakeW = maxW * (fakeVals[i] / max);
+            return `
+              <text x="${left - 12}" y="${y + 18}" text-anchor="end" font-size="12" fill="${COLORS.muted}" font-family="Courier New, monospace">${label}</text>
+              <rect x="${left}" y="${y}" width="${maxW}" height="14" rx="8" fill="#eadfd2"></rect>
+              <rect x="${left}" y="${y}" width="${realW}" height="14" rx="8" fill="${COLORS.real}" opacity="0.82"></rect>
+              <rect x="${left}" y="${y + 18}" width="${maxW}" height="14" rx="8" fill="#eadfd2"></rect>
+              <rect x="${left}" y="${y + 18}" width="${fakeW}" height="14" rx="8" fill="${COLORS.fake}" opacity="0.82"></rect>
+              <text x="${left + maxW + 12}" y="${y + 12}" font-size="12" fill="${COLORS.ink}">${fmtNum(realVals[i], 2)}</text>
+              <text x="${left + maxW + 12}" y="${y + 30}" font-size="12" fill="${COLORS.ink}">${fmtNum(fakeVals[i], 2)}</text>
+            `;
+          }).join("")}
+          <text x="${left}" y="248" font-size="12" fill="${COLORS.real}" font-family="Courier New, monospace">Upper bar: REAL rows</text>
+          <text x="${left + 150}" y="248" font-size="12" fill="${COLORS.fake}" font-family="Courier New, monospace">Lower bar: FAKE rows</text>
+        </svg>`;
+    }
+
+    function subjectChart() {
+      const grouped = Object.entries(groupBy(rows, r => r.subject)).map(([subject, items]) => ({
+        subject,
+        count: items.length,
+        accuracy: items.filter(r => r.true_label === r.predicted_label).length / items.length
+      })).sort((a, b) => b.count - a.count).slice(0, 8);
+      const left = 188, top = 24, rowH = 34, maxW = 146;
+      const clip = (text, max = 20) => text.length > max ? `${text.slice(0, max - 1)}…` : text;
+      document.getElementById("subject-chart").innerHTML = `
+        <svg viewBox="0 0 440 ${top + grouped.length * rowH + 18}" aria-label="Accuracy by subject">
+          ${grouped.map((g, i) => {
+            const y = top + i * rowH;
+            return `
+              <text x="${left - 12}" y="${y + 15}" text-anchor="end" font-size="11" fill="${COLORS.muted}" font-family="Courier New, monospace">${clip(g.subject)}</text>
+              <rect x="${left}" y="${y}" width="${maxW}" height="12" rx="7" fill="#eadfd2"></rect>
+              <rect x="${left}" y="${y}" width="${maxW * g.accuracy}" height="12" rx="7" fill="${COLORS.accent}"></rect>
+              <text x="${left + maxW + 10}" y="${y + 11}" font-size="12" fill="${COLORS.ink}">${fmtPct(g.accuracy)}</text>
+              <text x="${left - 34}" y="${y + 11}" font-size="12" fill="${COLORS.ink}">${g.count}</text>
+            `;
+          }).join("")}
+        </svg>`;
+    }
+
+    function timeChart() {
+      const sorted = [...rows].sort((a, b) => a.processing_time - b.processing_time);
+      const max = Math.max(...sorted.map(r => r.processing_time), 1);
+      const avg = mean(sorted.map(r => r.processing_time));
+      const w = 410, h = 280, left = 34, right = 18, top = 18, bottom = 30;
+      const innerW = w - left - right, innerH = h - top - bottom;
+      const points = sorted.map((r, i) => {
+        const x = left + (i / (sorted.length - 1 || 1)) * innerW;
+        const y = top + innerH - (r.processing_time / max) * innerH;
+        return `${x},${y}`;
+      }).join(" ");
+      const avgY = top + innerH - (avg / max) * innerH;
+      document.getElementById("time-chart").innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" aria-label="Processing time distribution">
+          <line x1="${left}" y1="${top + innerH}" x2="${w - right}" y2="${top + innerH}" stroke="${COLORS.border}" />
+          <line x1="${left}" y1="${top}" x2="${left}" y2="${top + innerH}" stroke="${COLORS.border}" />
+          <line x1="${left}" y1="${avgY}" x2="${w - right}" y2="${avgY}" stroke="${COLORS.fake}" stroke-dasharray="5 5" opacity="0.7" />
+          <polyline points="${points}" fill="none" stroke="${COLORS.accent2}" stroke-width="2.4" />
+          <text x="${left + 8}" y="${avgY - 8}" font-size="12" fill="${COLORS.fake}" font-family="Courier New, monospace">Avg ${fmtNum(avg)}s</text>
+          <text x="${left}" y="${h - 8}" font-size="11" fill="${COLORS.muted}" font-family="Courier New, monospace">fastest</text>
+          <text x="${w - 58}" y="${h - 8}" font-size="11" fill="${COLORS.muted}" font-family="Courier New, monospace">slowest</text>
+          <text x="0" y="${top + 12}" font-size="11" fill="${COLORS.muted}" font-family="Courier New, monospace">${fmtNum(max)}s</text>
+        </svg>`;
+    }
+
+    function errorTable() {
+      const topBySubject = [];
+      const seenSubjects = new Set();
+      errors.forEach((r) => {
+        if (topBySubject.length >= 4 || seenSubjects.has(r.subject)) return;
+        seenSubjects.add(r.subject);
+        topBySubject.push(r);
+      });
+      document.getElementById("error-table").innerHTML = topBySubject.map((r) => `
+        <tr>
+          <td>${r.title}</td>
+          <td><span class="badge ${r.true_label === "REAL" ? "real" : "fake"}">${r.true_label}</span></td>
+          <td><span class="badge ${r.predicted_label === "REAL" ? "real" : "fake"}">${r.predicted_label}</span></td>
+          <td>${fmtNum(r.confidence, 2)}</td>
+          <td>${r.subject}</td>
+        </tr>
+      `).join("");
+    }
+
+    hero();
+    kpis();
+    confusionChart();
+    distributionChart();
+    confidenceChart();
+    signalChart();
+    subjectChart();
+    timeChart();
+    errorTable();
+  </script>
+</body>
+</html>
